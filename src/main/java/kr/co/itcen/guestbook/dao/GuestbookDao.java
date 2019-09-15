@@ -83,36 +83,37 @@ public class GuestbookDao {
 		return connection;
 	}
 
-//	public void delete(Long no) {
-//	}	
-//
-//	public void delete() {
-//		Connection connection = null;
-//		PreparedStatement pstmt = null;
-//		
-//		try {
-//			connection = getConnection();
-//			
-//			String sql = "delete from guestbook";
-//			pstmt = connection.prepareStatement(sql);
-//			
-//			pstmt.executeUpdate();
-//			
-//		} catch (SQLException e) {
-//			System.out.println("error:" + e);
-//		} finally {
-//			try {
-//				if(pstmt != null) {
-//					pstmt.close();
-//				}
-//				if(connection != null) {
-//					connection.close();
-//				}
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//		}		
-//	}
+	public void delete(Long no) {
+	}	
+
+	public void delete(GuestbookVo vo) {
+		Connection connection = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			connection = getConnection();
+			
+			String sql = "delete from guestbook where no=? and password=?";
+			pstmt = connection.prepareStatement(sql);
+			pstmt.setLong(1, vo.getNo());
+			pstmt.setString(2, vo.getPassword());
+			pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			System.out.println("error:" + e);
+		} finally {
+			try {
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				if(connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}		
+	}
 
 	public List<GuestbookVo> getList() {
 		List<GuestbookVo> result = new ArrayList<GuestbookVo>();
@@ -124,7 +125,7 @@ public class GuestbookDao {
 		try {
 			connection = getConnection();
 			
-			String sql = "select * from guestbook order by no asc";
+			String sql = "select no, name, contents, date_format(reg_date, '%Y-%m-%d %H:%i:%s') from guestbook order by no asc";
 			pstmt = connection.prepareStatement(sql);
 			
 			rs = pstmt.executeQuery();
@@ -132,14 +133,12 @@ public class GuestbookDao {
 			while(rs.next()){
 				Long no = rs.getLong(1);
 				String name = rs.getString(2);
-				String password = rs.getString(3);
-				String contents = rs.getString(4);
-				String reg_date = rs.getString(5);
+				String contents = rs.getString(3);
+				String reg_date = rs.getString(4);
 				
 				GuestbookVo vo= new GuestbookVo();
 				vo.setNo(no);
 				vo.setName(name);
-				vo.setPassword(password);
 				vo.setContents(contents);
 				vo.setReg_date(reg_date);
 				
